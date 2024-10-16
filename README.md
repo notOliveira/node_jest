@@ -20,4 +20,4 @@ npm test
 npm start
 ```
 
-OBS: Inicializar backend primeiro, para que o 
+OBS: Inicializar backend primeiro, para que o frontend fique com a porta certa
