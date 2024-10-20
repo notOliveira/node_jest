@@ -9,70 +9,71 @@ app.use(cors());
 mongoose.connect('mongodb://localhost:27017/projeto_jest', {
 });
 
-const produtoSchema = new mongoose.Schema({
+const animalSchema = new mongoose.Schema({
     nome: String,
-    preco: Number
+    especie: String,
+    imagem: String
 }, {
-    collection: 'Produto'
+    collection: 'Animal'
 });
 
-const Produto = mongoose.model('Produto', produtoSchema);
+const Animal = mongoose.model('Animal', animalSchema);
 
-// Cadastrar produto
-app.post('/produto', async (req, res) => {
+// Cadastrar animal
+app.post('/animal', async (req, res) => {
     try {
-        const produto = new Produto(req.body);
-        await produto.save();
-        res.status(201).send(produto);
+        const animal = new Animal(req.body);
+        await animal.save();
+        res.status(201).send(animal);
     } catch (error) {
         res.status(500).send(error)
     }
 });
 
-// Listar produto
-app.get('/produto', async (req, res) => {
+// Listar animais
+app.get('/animal', async (req, res) => {
     try {
-        const produtos = await Produto.find({});
-        res.status(200).send(produtos);
+        const animals = await Animal.find({});
+        res.status(200).send(animals);
     } catch (error) {
         res.status(500).send(error)
     }
 });
 
-// Buscar produto por ID
-app.get('/produto/:id', async (req, res) => {
+// Buscar animal por ID
+app.get('/animal/:id', async (req, res) => {
     try {
-        const produto = await Produto.findById(req.params.id);
-        if (!produto) {
-            return res.status(404).send({ message: 'Produto não encontrado' });
+        const animal = await Animal.findById(req.params.id);
+        if (!animal) {
+            return res.status(404).send({ message: 'Animal não encontrado' });
         }
-        res.status(200).send(produto);
+        res.status(200).send(animal);
     } catch (error) {
         res.status(500).send(error)
     }
 });
 
-// Atualizar produto
-app.put('/produto/:id', async (req, res) => {
+// Atualizar animal
+app.put('/animal/:id', async (req, res) => {
     try {
-        const produto = await Produto.findByIdAndUpdate(req.params.id, req.body, { new: true });
-        if (!produto) {
-            return res.status(404).send({ message: 'Produto não encontrado' });
+        const animal = await Animal.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        if (!animal) {
+            return res.status(404).send({ message: 'Animal não encontrado' });
         }
-        res.status(200).send(produto);
+        res.status(200).send(animal);
     } catch (error) {
         res.status(500).send(error)
     }
 });
 
-// Deletar produto
-app.delete('/produto/:id', async (req, res) => {
+// Deletar animal
+app.delete('/animal/:id', async (req, res) => {
     try {
-        const produto = await Produto.findByIdAndDelete(req.params.id);
-        if (!produto) {
-            return res.status(404).send({ message: 'Produto não encontrado' });
+        const animal = await Animal.findByIdAndDelete(req.params.id);
+        if (!animal) {
+            return res.status(404).send({ message: 'Animal não encontrado' });
         }
-        res.status(200).send({ message: 'Produto deletado com sucesso' });
+        res.status(200).send({ message: 'Animal deletado com sucesso' });
     } catch (error) {
         res.status(500).send(error)
     }
