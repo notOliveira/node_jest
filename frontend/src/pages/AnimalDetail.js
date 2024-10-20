@@ -32,7 +32,18 @@ const AnimalDetail = () => {
       <p><strong>Espécie:</strong> {animal.especie}</p>
       <p><strong>Imagem:</strong> <img src={animal.imagem} alt={animal.nome} height={300}/></p>
       <Link to="/">Voltar para lista</Link>
+
+      <div>
+        <h2>Editar Animal</h2>
+        <form>
+          <input type="text" placeholder="Nome do animal" value={animal.nome} />
+          <input type="text" placeholder="Espécie do animal" value={animal.especie} />
+          <input type="text" placeholder="Imagem do animal" value={animal.imagem} />
+          <button type="submit">Salvar</button>
+        </form>
+      </div>
     </div>
+
   );
 };
 
