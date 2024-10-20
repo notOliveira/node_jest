@@ -4,50 +4,63 @@ import axios from 'axios';
 const API_URL = 'http://localhost:3000';
 
 const App = () => {
-  const [produtos, setProdutos] = useState([]);
-  const [novoProduto, setNovoProduto] = useState({ nome: '', preco: ''});
+  const [animals, setAnimals] = useState([]);
+  const [newAnimal, setNewAnimal] = useState({ nome: '', especie: '', imagem: '' });
 
 
-  const listarProdutos = async () => {
-    const response = await axios.get(`${API_URL}/produto`);
-    setProdutos(response.data);
+  const listAnimals = async () => {
+
+    try {
+      const response = await axios.get(`${API_URL}/animal`);
+      setAnimals(response.data);
+    } catch (error) {
+      console.error('Erro ao buscar animais');
+    }
   }
 
-  const criarProduto = async (e) => {
+  const createAnimal = async (e) => {
     e.preventDefault();
-    await axios.post(`${API_URL}/produto`, novoProduto);
-    listarProdutos();
+    await axios.post(`${API_URL}/animal`, newAnimal);
+    listAnimals();
   }
 
   useEffect(() => {
-    listarProdutos();
+    listAnimals();
   }, []);
 
   return (
     <div>
-      <h1>Lista de Produtos</h1>
+      <h1>Lista de Animais</h1>
       <ul>
-        {produtos.map((produto) => (
-          <li key={produto.id}>
-            {produto.nome} - R$ {produto.preco}
+        {animals.map((animal) => (
+          <li key={animal.id}>
+            {animal.nome} - R$ {animal.preco}
           </li>
         ))}
       </ul>
 
-      <h2>Novo Produto</h2>
-      <form onSubmit={criarProduto}>
+      <h2>Novo Animal</h2>
+      <form onSubmit={createAnimal}>
         <input
           type="text"
-          placeholder="Nome do produto"
-          value={novoProduto.nome}
-          onChange={(e) => setNovoProduto({ ...novoProduto, nome: e.target.value })}
+          placeholder="Nome do animal"
+          value={newAnimal.nome}
+          onChange={(e) => setNewAnimal({ ...newAnimal, nome: e.target.value })}
         />
         <input
-          type="number"
-          placeholder="Preço do produto"
-          value={novoProduto.preco}
-          onChange={(e) => setNovoProduto({ ...novoProduto, preco: e.target.value })}
+          type="text"
+          placeholder="Espécie do animal"
+          value={newAnimal.especie}
+          onChange={(e) => setNewAnimal({ ...newAnimal, especie: e.target.value })}
         />
+
+        <input
+          type="text"
+          placeholder="Imagem do animal"
+          value={newAnimal.imagem}
+          onChange={(e) => setNewAnimal({ ...newAnimal, imagem: e.target.value })}
+        />
+
         <button type="submit">Cadastrar</button>
         </form>
     </div>
