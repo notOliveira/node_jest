@@ -1,30 +1,32 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
-
-const API_URL = 'http://localhost:3000';
+import { listAnimals, createAnimal } from '../api';  // Importa funções da API
 
 const AnimalList = () => {
   const [animals, setAnimals] = useState([]);
   const [newAnimal, setNewAnimal] = useState({ nome: '', especie: '', imagem: '' });
 
-  const listAnimals = async () => {
+  const fetchAnimals = async () => {
     try {
-      const response = await axios.get(`${API_URL}/animal`);
-      setAnimals(response.data);
+      const animals = await listAnimals();  // Usa a função da API para listar animais
+      setAnimals(animals);
     } catch (error) {
       console.error('Erro ao buscar animais');
     }
   };
 
-  const createAnimal = async (e) => {
+  const handleCreateAnimal = async (e) => {
     e.preventDefault();
-    await axios.post(`${API_URL}/animal`, newAnimal);
-    listAnimals();
+    try {
+      await createAnimal(newAnimal);  // Usa a função da API para criar um animal
+      fetchAnimals();  // Atualiza a lista
+    } catch (error) {
+      console.error('Erro ao criar animal');
+    }
   };
 
   useEffect(() => {
-    listAnimals();
+    fetchAnimals();  // Chama a função para buscar os animais quando o componente é montado
   }, []);
 
   return (
@@ -32,14 +34,14 @@ const AnimalList = () => {
       <h1>Lista de Animais</h1>
       <ul>
         {animals.map((animal) => (
-          <li key={animal._id}>  {/* Use _id aqui, pois MongoDB usa _id */}
+          <li key={animal._id}>
             <Link to={`/animal/${animal._id}`}>{animal.nome} - {animal.especie}</Link>
           </li>
         ))}
       </ul>
 
       <h2>Novo Animal</h2>
-      <form onSubmit={createAnimal}>
+      <form onSubmit={handleCreateAnimal}>
         <input
           type="text"
           placeholder="Nome do animal"

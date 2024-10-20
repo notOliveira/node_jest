@@ -1,24 +1,44 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link, useParams } from 'react-router-dom';  // Importa useParams para pegar os parâmetros da rota
-
-const API_URL = 'http://localhost:3000';
+import { Link, useParams } from 'react-router-dom';
+import { getAnimal, updateAnimal, deleteAnimal } from '../api';  // Importa funções da API
 
 const AnimalDetail = () => {
-  const { id } = useParams();  // Use useParams para pegar o ID da URL
+  const { id } = useParams();
   const [animal, setAnimal] = useState(null);
+  const [updatedAnimal, setUpdatedAnimal] = useState({ nome: '', especie: '', imagem: '' });
 
-  const getAnimal = async (id) => {
+  const fetchAnimal = async () => {
     try {
-      const response = await axios.get(`${API_URL}/animal/${id}`);
-      setAnimal(response.data);
+      const animal = await getAnimal(id);  // Usa a função da API para buscar o animal
+      setAnimal(animal);
+      setUpdatedAnimal({ nome: animal.nome, especie: animal.especie, imagem: animal.imagem });
     } catch (error) {
       console.error('Erro ao buscar detalhes do animal', error);
     }
   };
 
+  const handleUpdateAnimal = async (e) => {
+    e.preventDefault();
+    try {
+      await updateAnimal(id, updatedAnimal);  // Usa a função da API para atualizar o animal
+      fetchAnimal();  // Atualiza os detalhes do animal
+    } catch (error) {
+      console.error('Erro ao atualizar animal', error);
+    }
+  };
+
+  const handleDeleteAnimal = async () => {
+    try {
+      await deleteAnimal(id);  // Usa a função da API para deletar o animal
+      // Redirecionar para a página de listagem após deletar
+      window.location.href = '/';
+    } catch (error) {
+      console.error('Erro ao deletar animal', error);
+    }
+  };
+
   useEffect(() => {
-    getAnimal(id);  // Chama a função para buscar o animal pelo ID
+    fetchAnimal();  // Chama a função para buscar os detalhes do animal quando o componente é montado
   }, [id]);
 
   if (!animal) {
@@ -30,20 +50,33 @@ const AnimalDetail = () => {
       <h1>Detalhes do Animal</h1>
       <p><strong>Nome:</strong> {animal.nome}</p>
       <p><strong>Espécie:</strong> {animal.especie}</p>
-      <p><strong>Imagem:</strong> <img src={animal.imagem} alt={animal.nome} height={300}/></p>
+      <p><strong>Imagem:</strong> <img src={animal.imagem} alt={animal.nome} /></p>
+
+      <h2>Editar Animal</h2>
+      <form onSubmit={handleUpdateAnimal}>
+        <input
+          type="text"
+          value={updatedAnimal.nome}
+          onChange={(e) => setUpdatedAnimal({ ...updatedAnimal, nome: e.target.value })}
+        />
+        <input
+          type="text"
+          value={updatedAnimal.especie}
+          onChange={(e) => setUpdatedAnimal({ ...updatedAnimal, especie: e.target.value })}
+        />
+        <input
+          type="text"
+          value={updatedAnimal.imagem}
+          onChange={(e) => setUpdatedAnimal({ ...updatedAnimal, imagem: e.target.value })}
+        />
+        <button type="submit">Atualizar</button>
+      </form>
+      <br /><br /><br />
+
+      <button onClick={handleDeleteAnimal}>Deletar Animal</button>
+      <br /><br /><br />
       <Link to="/">Voltar para lista</Link>
-
-      <div>
-        <h2>Editar Animal</h2>
-        <form>
-          <input type="text" placeholder="Nome do animal" value={animal.nome} />
-          <input type="text" placeholder="Espécie do animal" value={animal.especie} />
-          <input type="text" placeholder="Imagem do animal" value={animal.imagem} />
-          <button type="submit">Salvar</button>
-        </form>
-      </div>
     </div>
-
   );
 };
 
