@@ -1,81 +1,72 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { getAnimal, updateAnimal, deleteAnimal } from '../api';  // Importa funções da API
+import { useParams, useNavigate } from 'react-router-dom';
+import { getAnimal, updateAnimal, deleteAnimal } from '../api';
+import '../styles/AnimalDetail.css';
 
 const AnimalDetail = () => {
-  const { id } = useParams();
-  const [animal, setAnimal] = useState(null);
+  const [animal, setAnimal] = useState({ nome: '', especie: '', imagem: '' });
   const [updatedAnimal, setUpdatedAnimal] = useState({ nome: '', especie: '', imagem: '' });
+  const { id } = useParams();  // Para pegar o ID do animal
+  const navigate = useNavigate(); // Para redirecionar
 
-  const fetchAnimal = async () => {
-    try {
-      const animal = await getAnimal(id);  // Usa a função da API para buscar o animal
-      setAnimal(animal);
-      setUpdatedAnimal({ nome: animal.nome, especie: animal.especie, imagem: animal.imagem });
-    } catch (error) {
-      console.error('Erro ao buscar detalhes do animal', error);
-    }
-  };
+  useEffect(() => {
+    const fetchAnimal = async () => {
+      const data = await getAnimal(id);
+      setAnimal(data);
+      setUpdatedAnimal(data);  // Preenche os campos de edição com os dados atuais
+    };
+    fetchAnimal();
+  }, [id]);
 
   const handleUpdateAnimal = async (e) => {
     e.preventDefault();
-    try {
-      await updateAnimal(id, updatedAnimal);  // Usa a função da API para atualizar o animal
-      fetchAnimal();  // Atualiza os detalhes do animal
-    } catch (error) {
-      console.error('Erro ao atualizar animal', error);
-    }
+    await updateAnimal(id, updatedAnimal);
+    navigate(`/animals/${id}`); // Redireciona para a página de detalhes após a atualização
   };
 
   const handleDeleteAnimal = async () => {
-    try {
-      await deleteAnimal(id);  // Usa a função da API para deletar o animal
-      // Redirecionar para a página de listagem após deletar
-      window.location.href = '/';
-    } catch (error) {
-      console.error('Erro ao deletar animal', error);
-    }
+    await deleteAnimal(id);
+    navigate('/');  // Redireciona para a lista de animais após a exclusão
   };
 
-  useEffect(() => {
-    fetchAnimal();  // Chama a função para buscar os detalhes do animal quando o componente é montado
-  }, [id]);
-
-  if (!animal) {
-    return <div>Carregando...</div>;
-  }
-
   return (
-    <div>
-      <h1>Detalhes do Animal</h1>
-      <p><strong>Nome:</strong> {animal.nome}</p>
-      <p><strong>Espécie:</strong> {animal.especie}</p>
-      <p><strong>Imagem:</strong> <img src={animal.imagem} alt={animal.nome} /></p>
+    <div className="animal-detail-container">
+      <h1 className="animal-detail-title">{animal.nome}</h1>
+      <div className="animal-detail-content">
+        <div className="animal-info">
+          <img src={animal.imagem} alt={animal.nome} className="animal-image" />
+          <p><strong>Espécie:</strong> {animal.especie}</p>
+        </div>
 
-      <h2>Editar Animal</h2>
-      <form onSubmit={handleUpdateAnimal}>
-        <input
-          type="text"
-          value={updatedAnimal.nome}
-          onChange={(e) => setUpdatedAnimal({ ...updatedAnimal, nome: e.target.value })}
-        />
-        <input
-          type="text"
-          value={updatedAnimal.especie}
-          onChange={(e) => setUpdatedAnimal({ ...updatedAnimal, especie: e.target.value })}
-        />
-        <input
-          type="text"
-          value={updatedAnimal.imagem}
-          onChange={(e) => setUpdatedAnimal({ ...updatedAnimal, imagem: e.target.value })}
-        />
-        <button type="submit">Atualizar</button>
-      </form>
-      <br /><br /><br />
-
-      <button onClick={handleDeleteAnimal}>Deletar Animal</button>
-      <br /><br /><br />
-      <Link to="/">Voltar para lista</Link>
+        <form className="animal-edit-form" onSubmit={handleUpdateAnimal}>
+          <h2>Editar Animal</h2>
+          <input
+            type="text"
+            placeholder="Nome"
+            value={updatedAnimal.nome}
+            onChange={(e) => setUpdatedAnimal({ ...updatedAnimal, nome: e.target.value })}
+            className="input-field"
+          />
+          <input
+            type="text"
+            placeholder="Espécie"
+            value={updatedAnimal.especie}
+            onChange={(e) => setUpdatedAnimal({ ...updatedAnimal, especie: e.target.value })}
+            className="input-field"
+          />
+          <input
+            type="text"
+            placeholder="Imagem (URL)"
+            value={updatedAnimal.imagem}
+            onChange={(e) => setUpdatedAnimal({ ...updatedAnimal, imagem: e.target.value })}
+            className="input-field"
+          />
+          <button type="submit" className="submit-button">Atualizar</button>
+        </form>
+        <br />
+        <br />
+        <button onClick={handleDeleteAnimal} className="delete-button">Deletar Animal</button>
+      </div>
     </div>
   );
 };
