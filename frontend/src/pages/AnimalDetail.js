@@ -21,11 +21,13 @@ const AnimalDetail = () => {
   const handleUpdateAnimal = async (e) => {
     e.preventDefault();
     await updateAnimal(id, updatedAnimal);
-    navigate(`/animals/${id}`); // Redireciona para a página de detalhes após a atualização
+    alert('Animal atualizado com sucesso!');
+    navigate(`/`); // Redireciona para a página de detalhes após a atualização
   };
 
   const handleDeleteAnimal = async () => {
     await deleteAnimal(id);
+    alert('Animal deletado com sucesso!');
     navigate('/');  // Redireciona para a lista de animais após a exclusão
   };
 

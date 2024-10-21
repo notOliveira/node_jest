@@ -1,3 +1,8 @@
+
+* {
+  text-decoration: none;
+}
+
 .animal-list-container {
     max-width: 800px;
     margin: 0 auto;
@@ -42,8 +47,7 @@
   }
   
   .animal-image {
-    width: 100px;
-    height: 100px;
+    width: 100%;
     object-fit: cover;
     border-radius: 50%;
   }
